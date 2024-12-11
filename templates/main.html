@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Погодный сервис</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Проверка погодных условий</h1>
+        <form method="POST" class="weather-form">
+            {{ form.hidden_tag() }}  <!-- Для защиты от CSRF -->
+            <div class="form-group">
+                {{ form.location_A.label }}  <!-- Метка для первого поля -->
+                {{ form.location_A(size=32, placeholder='Введите название отправной точки') }}  <!-- Поле ввода для отправной точки -->
+                {% for error in form.location_A.errors %}
+                    <span class="error">{{ error }}</span>  <!-- Отображение ошибок валидации -->
+                {% endfor %}
+            </div>
+            <div class="form-group">
+                {{ form.location_B.label }}  <!-- Метка для второго поля -->
+                {{ form.location_B(size=32, placeholder='Введите название конечной точки') }}  <!-- Поле ввода для конечной точки -->
+                {% for error in form.location_B.errors %}
+                    <span class="error">{{ error }}</span>  <!-- Отображение ошибок валидации -->
+                {% endfor %}
+            </div>
+            <button type="submit" class="submit-button">{{ form.submit.label }}</button>  <!-- Кнопка отправки -->
+        </form>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="alert">
+                    <ul>
+                    {% for message in messages %}
+                        <li>{{ message }}</li>
+                    {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+        {% endwith %}
+        <button id="theme-toggle" style="margin-top: 20px;">Сменить тему</button> <!-- Кнопка смены темы -->
+    </div>
+    <script>
+        const themeToggleButton = document.getElementById('theme-toggle');
+        themeToggleButton.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? '' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+        });
+    </script>
+</body>
+</html>
