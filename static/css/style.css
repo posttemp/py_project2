@@ -1,113 +1,88 @@
 :root {
-    --background-color: #f0f4f8;
-    --container-background: #ffffff;
-    --text-color: #333;
-    --primary-color: #4a90e2;
-    --hover-color: #357ab8;
-    --alert-background: #ffdddd;
-    --alert-border: #d8000c;
-    --alert-text: #d8000c;
+    --background-color: #f7f9fc; /* Новый основной цвет фона */
+    --container-background: #ffffff; /* Новый цвет фона контейнера */
+    --text-color: #333; /* Новый цвет текста */
+    --primary-color: #007bff; /* Новый основной цвет */
+    --hover-color: #0056b3; /* Новый цвет при наведении */
+    --alert-background: #ffe5e5; /* Новый цвет фона предупреждений */
+    --alert-border: #ff0000; /* Новый цвет границы предупреждений */
+    --alert-text: #ff0000; /* Новый цвет текста предупреждений */
 }
 
 [data-theme="dark"] {
-    --background-color: #1e1e1e;
-    --container-background: #2c2c2c;
-    --text-color: #f0f0f0;
-    --primary-color: #4a90e2;
-    --hover-color: #357ab8;
-    --alert-background: #3c3c3c;
-    --alert-border: #d8000c;
-    --alert-text: #d8000c;
+    --background-color: #1c1c1c; /* Новый цвет фона в темной теме */
+    --container-background: #2c2c2c; /* Новый цвет фона контейнера в темной теме */
+    --text-color: #eaeaea; /* Новый цвет текста в темной теме */
+    --primary-color: #007bff; /* Новый основной цвет в темной теме */
+    --hover-color: #0056b3; /* Новый цвет при наведении в темной теме */
+    --alert-background: #4a4a4a; /* Новый цвет фона предупреждений в темной теме */
+    --alert-border: #ff0000; /* Новый цвет границы предупреждений в темной теме */
+    --alert-text: #ff0000; /* Новый цвет текста предупреждений в темной теме */
 }
 
 * {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    font-family: 'Poppins', sans-serif;
+    box-sizing: border-box; /* Устанавливаем box-sizing для всех элементов */
+    margin: 0; /* Убираем отступы */
+    padding: 0; /* Убираем внутренние отступы */
+    font-family: 'Helvetica Neue', sans-serif; /* Изменен шрифт */
 }
 
 body {
-    background-color: var(--background-color);
-    color: var(--text-color);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    padding: 20px;
+    background-color: var(--background-color); /* Цвет фона страницы */
+    color: var(--text-color); /* Цвет текста страницы */
+    display: flex; /* Используем flexbox для центрирования */
+    justify-content: center; /* Центрируем по горизонтали */
+    align-items: center; /* Центрируем по вертикали */
+    height: 100vh; /* Высота на весь экран */
+    padding: 20px; /* Отступы */
 }
 
-.container {
-    background: var(--container-background);
-    border-radius: 12px;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
-    padding: 30px;
-    width: 100%;
-    max-width: 400px;
-    text-align: center;
+.card {
+    background: var(--container-background); /* Цвет фона карточки */
+    border-radius: 12px; /* Скругление углов */
+    box-shadow: 0 6px 30px rgba(0, 0, 0, 0.1); /* Тень карточки */
+    padding: 20px; /* Внутренние отступы */
+    width: 100%; /* Ширина 100% */
+    max-width: 480px; /* Максимальная ширина */
+    text-align: center; /* Центрируем текст */
 }
 
 h1 {
-    margin-bottom: 20px;
-    font-size: 28px;
-    color: var(--primary-color);
+    margin-bottom: 20px; /* Отступ снизу */
+    font-size: 28px; /* Размер шрифта заголовка */
+    color: var(--primary-color); /* Цвет заголовка */
 }
 
 .weather-form {
-    display: flex;
-    flex-direction: column;
+    display: flex; /* Используем flexbox для формы */
+    flex-direction: column; /* Вертикальное расположение элементов */
 }
 
 .form-group {
-    margin-bottom: 20px;
-    text-align: left;
+    margin-bottom: 20px; /* Отступ снизу для группы формы */
+    text-align: left; /* Выравнивание текста влево */
 }
 
 label {
-    margin-bottom: 5px;
-    font-weight: 600;
-    color: var(--text-color);
+    margin-bottom: 6px; /* Отступ снизу для метки */
+    font-weight: 600; /* Жирный шрифт */
+    color: var(--text-color); /* Цвет метки */
 }
 
 input[type="text"] {
-    padding: 12px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    width: 100%;
-    transition: border-color 0.3s, box-shadow 0.3s;
+    padding: 12px; /* Внутренние отступы */
+    border: 1px solid #ccc; /* Цвет границы */
+    border-radius: 8px; /* Скругление углов */
+    width: 100%; /* Ширина 100% */
+    transition: border-color 0.3s ease, box-shadow 0.3s ease; /* Плавный переход для границы и тени */
 }
 
 input[type="text"]:focus {
-    border-color: var(--primary-color);
-    outline: none;
-    box-shadow: 0 0 5px rgba(74, 144, 226, 0.5);
+    border-color: var(--primary-color); /* Цвет границы при фокусе */
+    outline: none; /* Убираем обводку */
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Тень при фокусе */
 }
 
-.submit-button {
-    background-color: var(--primary-color);
-    color: white;
-    padding: 12px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 18px;
-    transition: background-color 0.3s, transform 0.2s;
-}
-
-.submit-button:hover {
-    background-color: var(--hover-color);
-    transform: translateY(-2px);
-}
-
-.alert {
-    margin-top: 20px;
-    background-color: var(--alert-background);
-    color: var(--alert-text);
-    border: 1px solid var(--alert-border);
-    border-radius: 6px;
-    padding: 12px;
-}
-
-.alert ul {
-    list-style-type: none;
-}
+.submit-btn {
+    background-color: var(--primary-color); /* Цвет кнопки */
+    color: #fff; /* Цвет текста кнопки */

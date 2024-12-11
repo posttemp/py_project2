@@ -4,50 +4,58 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
 
-class LocationForm(FlaskForm):
-    location_A = StringField('Введите название отправной точки:', validators=[DataRequired()])     # Поле для ввода названия отправной точки
-    location_B = StringField('Введите название конечной точки:', validators=[DataRequired()])     # Поле для ввода названия конечной точки
-    submit = SubmitField('Получить данные о погоде')     # Кнопка для отправки формы
 API_KEY = 'VppSmk8M7Al00nYGHmj6HM48KqnFakVH'
 
-app = Flask(__name__, template_folder=r'C:\Users\ilalc\PycharmProjects\PythonProject\templates', static_folder=r'C:\Users\ilalc\PycharmProjects\PythonProject\static')
+class LocationForm(FlaskForm):
+    location_A = StringField('Введите название отправной точки:', validators=[DataRequired()])
+    location_B = StringField('Введите название конечной точки:', validators=[DataRequired()])
+    submit = SubmitField('Получить данные о погоде')
+
+app = Flask(__name__, template_folder='templates', static_folder='static')
 app.config["SECRET_KEY"] = "oboldui123"
 
-def check_bad_weather(wet_info: dict):
-    '''Функция анализа погодных условий'''
-    if wet_info['temperature_celsius'] < 0:
-        return 'Температура ниже 0, советуем одеться потеплее'
-    elif wet_info['temperature_celsius'] > 35:
-        return 'Очень жарко, советуем оставаться дома или, если вы на улице оставайтесь в тени'
-    elif wet_info['wind_speed'] > 7:
-        return 'Сильный ветер, советуем оставаться дома, воизбежании несчастных случаев'
-    elif wet_info['precipitation_probability'] > 70:
-        return 'Высокая вероятность осадков, не забудьте захватить с собой зонтик'
+def analyze_weather_conditions(weather_info):
+    """Анализирует погодные условия и возвращает рекомендации."""
+    print("Анализируем погодные условия:", weather_info)  # Отладочное сообщение
+
+    temperature = weather_info.get('temperature_celsius')
+    wind_speed = weather_info.get('wind_speed')
+    precipitation_probability = weather_info.get('precipitation_probability')
+
+    if temperature is None or wind_speed is None or precipitation_probability is None:
+        return 'Ошибка: недостаточно данных для анализа погоды.'
+
+    if temperature < 0:
+        return 'Температура ниже 0, советуем одеться потеплее.'
+    elif temperature > 35:
+        return 'Очень жарко, советуем оставаться дома или, если вы на улице, оставайтесь в тени.'
+    elif wind_speed > 7:
+        return 'Сильный ветер, советуем оставаться дома, во избежание несчастных случаев.'
+    elif precipitation_probability > 70:
+        return 'Высокая вероятность осадков, не забудьте захватить с собой зонтик.'
     else:
-        return 'Самое лучшее время для прогулки'
+        return 'Самое лучшее время для прогулки.'
 
-
-def req(city):
-    """Получение кординат"""
+def get_coordinates(city):
+    """Получает координаты города."""
     location_url = f'http://dataservice.accuweather.com/locations/v1/cities/search?apikey={API_KEY}&q={city}&language=ru'
     try:
         response = requests.get(location_url)
+        response.raise_for_status()
         data = response.json()
         if data:
-            lat = data[0]['GeoPosition']['Latitude']
-            long = data[0]['GeoPosition']['Longitude']
-            return [lat, long]
+            return data[0]['GeoPosition']['Latitude'], data[0]['GeoPosition']['Longitude']
     except requests.exceptions.RequestException as e:
         print(f'Ошибка запроса: {e}')
         return None
 
-
-def get_loc_code_by_coords(city):
-    """Функция для получения гео-ключа по кординатам"""
-    city_cor = f'{city[0]},{city[1]}'
-    location_url = f'http://dataservice.accuweather.com/locations/v1/cities/geoposition/search?apikey={API_KEY}&q={city_cor}'
+def get_location_key_by_coordinates(coordinates):
+    """Получает гео-ключ по координатам."""
+    lat, long = coordinates
+    location_url = f'http://dataservice.accuweather.com/locations/v1/cities/geoposition/search?apikey={API_KEY}&q={lat},{long}'
     try:
         response = requests.get(location_url)
+        response.raise_for_status()
         data = response.json()
         if data:
             return [data['Key'], data['AdministrativeArea']['LocalizedName']]
@@ -55,62 +63,71 @@ def get_loc_code_by_coords(city):
         print(f'Ошибка запроса: {e}')
         return None
 
-
-def get_weather_data(loc_key):
-    '''Фукция получения данных о погоде'''
-    weather_url = f'http://dataservice.accuweather.com/currentconditions/v1/{loc_key}?apikey={API_KEY}&details=true'  # запрос к api
+def get_weather_data(location_key):
+    """Получает данные о погоде по гео-ключу."""
+    weather_url = f'http://dataservice.accuweather.com/currentconditions/v1/{location_key}?apikey={API_KEY}&details=true'
     try:
-        weather_r = requests.get(weather_url)  # гет-запрос к api
-        weather_data = weather_r.json()[0]
-        temperature_celsius = weather_data['Temperature']['Metric']['Value']
-        humidity_percentage = weather_data['RelativeHumidity']
-        wind_speed = round(weather_data['Wind']['Speed']['Metric']['Value'] * 0.2778, 2)
-        precipitation_probability = 0 if not weather_data['HasPrecipitation'] else 100
-        wet_info = {
-            'temperature_celsius': temperature_celsius,
-            'humidity_percentage': f'{humidity_percentage}%',
-            'wind_speed': wind_speed,
-            'precipitation_probability': precipitation_probability
+        response = requests.get(weather_url)
+        response.raise_for_status()
+        weather_data = response.json()[0]
+        return {
+            'temperature_celsius': weather_data['Temperature']['Metric']['Value'],
+            'humidity_percentage': f"{weather_data['RelativeHumidity']}%",
+            'wind_speed': round(weather_data['Wind']['Speed']['Metric']['Value'] * 0.2778, 2),
+            'precipitation_probability': 100 if weather_data['HasPrecipitation'] else 0
         }
-        return wet_info
     except requests.exceptions.RequestException as e:
-        print(f"Ошибка запроса погода: {e}")
-
-
+        print(f"Ошибка запроса погоды: {e}")
+        return None
 
 @app.route("/", methods=['GET', 'POST'])
 def main():
     form = LocationForm()
-    analize = {}
-    if request.method == "POST":  # Проверяем, был ли отправлен POST-запрос
-        if form.validate_on_submit():  # Проверяем, что форма валидн
-            point_A = form.location_A.data  # Получаем данные из поля location_A
-            point_B = form.location_B.data # Получаем данные из поля location_B
-            k_A = get_loc_code_by_coords(req(point_A))[0]  # Получаем код местоположения по координатам A
-            k_B = get_loc_code_by_coords(req(point_B))[0] # Получаем код местоположения по координатам B
-            response_A = get_weather_data(k_A)  # Получаем данные о погоде A
-            response_B = get_weather_data(k_B)  # Получаем данные о погоде B
-            analize_A = check_bad_weather(response_A)  # Анализируем данные о погоде A
-            analize_B = check_bad_weather(response_B)  # Анализируем данные о погоде A
-            weather_data = {
-            f'Анализ погодных условий в городе: {point_A}':{
-            'temperature_celsius': response_A['temperature_celsius'],
-            'precipitation_probability': response_A['precipitation_probability'],
-            'humidity_percentage': response_A['humidity_percentage'],
-            'wind_speed': response_A['wind_speed'],
-            'analyze': analize_A
-            },
+    if form.validate_on_submit():
+        point_A = form.location_A.data
+        point_B = form.location_B.data
 
-            f'Анализ погодных условий в городе: {point_B}':{
-            'temperature_celsius': response_B['temperature_celsius'],
-            'precipitation_probability': response_B['precipitation_probability'],
-            'humidity_percentage': response_B['humidity_percentage'],
-            'wind_speed': response_B['wind_speed'],
-            'analyze': analize_B}
-            }
-            return render_template('weather.html', data=weather_data)  # Отображаем данные о погоде
-    return render_template('main.html', form=form)  # Отображаем форму при GET-запросе
+        # Получаем координаты по названиям городов
+        coords_A = get_coordinates(point_A)
+        coords_B = get_coordinates(point_B)
+
+        if coords_A and coords_B:
+            # Получаем локальные ключи по координатам
+            loc_key_A = get_location_key_by_coordinates(coords_A)
+            loc_key_B = get_location_key_by_coordinates(coords_B)
+
+            if loc_key_A and loc_key_B:
+                # Получаем данные о погоде по локальным ключам
+                weather_A = get_weather_data(loc_key_A[0])
+                weather_B = get_weather_data(loc_key_B[0])
+
+                if weather_A and weather_B:
+                    # Анализируем погодные условия
+                    analysis_A = analyze_weather_conditions(weather_A)
+                    analysis_B = analyze_weather_conditions(weather_B)
+                    print(analysis_A)
+                    # Формируем данные для отображения
+                    weather_data = {
+                        f'Анализ погодных условий в городе: {point_A}': {
+                            'temperature_celsius': weather_A['temperature_celsius'],
+                            'precipitation_probability': weather_A['precipitation_probability'],
+                            'humidity_percentage': weather_A['humidity_percentage'],
+                            'wind_speed': weather_A['wind_speed'],
+                            'analysis': analysis_A
+                        },
+                        f'Анализ погодных условий в городе: {point_B}': {
+                            'temperature_celsius': weather_B['temperature_celsius'],
+                            'precipitation_probability': weather_B['precipitation_probability'],
+                            'humidity_percentage': weather_B['humidity_percentage'],
+                            'wind_speed': weather_B['wind_speed'],
+                            'analysis': analysis_B
+                        }
+                    }
+                    # Здесь вы можете передать weather_data в шаблон для отображения
+                    return render_template('weather.html', data=weather_data)
+
+    return render_template('main.html', form=form)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     app.run(debug=True)

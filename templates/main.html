@@ -5,12 +5,78 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Погодный сервис</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        body {
+            font-family: 'Verdana', sans-serif; /* Изменен шрифт */
+            background-color: #f4f4f4; /* Новый цвет фона */
+            color: #333; /* Новый цвет текста */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            padding: 30px;
+            margin: 0;
+        }
+        .container {
+            max-width: 500px; /* Уменьшена максимальная ширина */
+            width: 100%;
+            background: #ffffff; /* Новый цвет фона карточки */
+            border-radius: 15px; /* Изменено скругление углов */
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); /* Изменена тень */
+            padding: 40px; /* Увеличены внутренние отступы */
+            text-align: center;
+        }
+        h1 {
+            font-size: 24px; /* Изменен размер заголовка */
+            margin-bottom: 25px; /* Увеличен отступ снизу */
+            color: #007bff; /* Новый цвет заголовка */
+        }
+        .form-group {
+            margin-bottom: 20px; /* Увеличен отступ снизу */
+            text-align: left;
+        }
+        .error {
+            color: #ff0000; /* Новый цвет ошибок */
+            font-size: 0.85em; /* Уменьшен размер шрифта ошибок */
+        }
+        .submit-button {
+            background-color: #007bff; /* Новый цвет кнопки */
+            color: white;
+            padding: 10px 15px; /* Уменьшены отступы */
+            border: none;
+            border-radius: 5px; /* Изменено скругление углов */
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        .submit-button:hover {
+            background-color: #0056b3; /* Новый цвет при наведении */
+        }
+        .alert {
+            margin-top: 20px;
+            background-color: #ffeeba; /* Новый цвет фона предупреждений */
+            color: #856404; /* Новый цвет текста предупреждений */
+            padding: 15px; /* Увеличены внутренние отступы */
+            border-radius: 5px;
+            border: 1px solid #ffeeba; /* Добавлена граница */
+        }
+        #theme-toggle {
+            margin-top: 20px;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff; /* Новый цвет кнопки смены темы */
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
         <h1>Проверка погодных условий</h1>
         <form method="POST" class="weather-form">
-            {{ form.hidden_tag() }}  <!-- Для защиты от CSRF -->
+            {{ form.hidden_tag() }}  <!-- Защита от CSRF -->
             <div class="form-group">
                 {{ form.location_A.label }}  <!-- Метка для первого поля -->
                 {{ form.location_A(size=32, placeholder='Введите название отправной точки') }}  <!-- Поле ввода для отправной точки -->
@@ -26,27 +92,3 @@
                 {% endfor %}
             </div>
             <button type="submit" class="submit-button">{{ form.submit.label }}</button>  <!-- Кнопка отправки -->
-        </form>
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                <div class="alert">
-                    <ul>
-                    {% for message in messages %}
-                        <li>{{ message }}</li>
-                    {% endfor %}
-                    </ul>
-                </div>
-            {% endif %}
-        {% endwith %}
-        <button id="theme-toggle" style="margin-top: 20px;">Сменить тему</button> <!-- Кнопка смены темы -->
-    </div>
-    <script>
-        const themeToggleButton = document.getElementById('theme-toggle');
-        themeToggleButton.addEventListener('click', () => {
-            const currentTheme = document.documentElement.getAttribute('data-theme');
-            const newTheme = currentTheme === 'dark' ? '' : 'dark';
-            document.documentElement.setAttribute('data-theme', newTheme);
-        });
-    </script>
-</body>
-</html>

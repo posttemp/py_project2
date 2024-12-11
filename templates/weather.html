@@ -6,56 +6,68 @@
     <title>Погода</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <style>
-        body {
-            background-color: var(--background-color);
-            color: var(--text-color);
+                body {
+            background-color: #e0e7ff; /* Новый цвет фона */
+            color: #1f2937; /* Новый цвет текста */
             display: flex;
             justify-content: center;
             align-items: center;
             flex-direction: column;
-            padding: 20px;
+            padding: 30px; /* Увеличены отступы */
+            margin: 0;
+            font-family: 'Verdana', sans-serif; /* Изменен шрифт */
         }
+
         .weather-container {
             text-align: center;
-            margin-top: 50px;
-            background: var(--container-background);
-            border-radius: 12px;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
-            padding: 30px;
+            margin-top: 60px; /* Увеличен отступ сверху */
+            background: #ffffff; /* Цвет фона контейнера */
+            border-radius: 20px; /* Увеличено скругление углов */
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3); /* Увеличена тень */
+            padding: 50px; /* Увеличены внутренние отступы */
             width: 100%;
-            max-width: 600px;
+            max-width: 700px; /* Увеличена максимальная ширина */
+            border: 2px solid #4f46e5; /* Добавлена граница */
         }
+
         .weather-card {
             display: inline-block;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            padding: 20px;
-            margin: 10px;
-            transition: transform 0.2s;
-            background: var(--container-background);
+            border: 2px solid #cbd5e1; /* Новый цвет границы */
+            border-radius: 15px; /* Увеличено скругление углов */
+            padding: 20px; /* Увеличены внутренние отступы */
+            margin: 20px; /* Увеличен отступ между карточками */
+            transition: transform 0.4s, box-shadow 0.4s; /* Плавный переход для трансформации и тени */
+            background: #f3f4f6; /* Новый цвет фона карточки */
+            position: relative; /* Для эффекта при наведении */
         }
+
         .weather-card:hover {
-            transform: scale(1.05);
+            transform: scale(1.05); /* Увеличение карточки при наведении */
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2); /* Тень при наведении */
         }
-        .submit-button {
-            background-color: var(--primary-color);
-            color: white;
-            padding: 12px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 18px;
-            transition: background-color 0.3s, transform 0.2s;
+
+        h1 {
+            font-size: 36px; /* Увеличен размер заголовка */
+            color: #3b82f6; /* Новый цвет заголовка */
+            margin-bottom: 25px; /* Увеличен отступ снизу */
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1); /* Добавлена тень к тексту */
         }
+
         #theme-toggle {
-            margin-top: 20px;
-            padding: 10px 15px;
+            margin-top: 30px; /* Увеличен отступ сверху */
+            padding: 12px 20px; /* Увеличены внутренние отступы */
             border: none;
-            border-radius: 5px;
-            background-color: var(--primary-color);
-            color: rgb(255, 255, 255);
+            border-radius: 8px; /* Увеличено скругление углов */
+            background-color: #3b82f6; /* Новый цвет кнопки смены темы */
+            color: #fff;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 18px; /* Увеличен размер шрифта */
+            transition: background-color 0.3s, transform 0.3s; /* Плавный переход для цвета фона и трансформации */
+        }
+
+        #theme-toggle:hover {
+            background-color: #2563eb; /* Цвет кнопки при наведении */
+            transform: translateY(-2px); /* Подъем кнопки при наведении */
         }
     </style>
 </head>
@@ -69,18 +81,9 @@
                 <p>Вероятность осадков: {{ weather_data['precipitation_probability'] }} %</p>
                 <p>Влажность: {{ weather_data['humidity_percentage'] }}</p>
                 <p>Скорость ветра: {{ weather_data['wind_speed'] }} м/с</p>
-                <p>Рекомендация: {{ weather_data['analyze'] }}</p>
+                <p>Рекомендация: {{ weather_data['analysis'] }}</p>
             </div>
         {% endfor %}
-        <button id="theme-toggle">Сменить тему</button> <!-- Добавлена кнопка смены темы -->
     </div>
-    <script>
-        const themeToggleButton = document.getElementById('theme-toggle');
-        themeToggleButton.addEventListener('click', () => {
-            const currentTheme = document.documentElement.getAttribute('data-theme');
-            const newTheme = currentTheme === 'dark' ? '' : 'dark';
-            document.documentElement.setAttribute('data-theme', newTheme);
-        });
-    </script>
 </body>
 </html>
